@@ -2,47 +2,48 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'name', 'email', 'password', 'salt'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password', 'remember_token', 'salt'
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    // Add this method to verify passwords
+    public function validateForPassportPasswordGrant($password)
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->password === $this->hashPassword($password);
     }
+
+    // Custom password hashing
+    public function hashPassword($value)
+    {
+        return hash_pbkdf2(
+            'sha256',
+            $value,
+            $this->salt,
+            100000,
+            32
+        );
+    }
+
+    // Mutator for password hashing
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = $this->hashPassword($value);
+    }
+    public function getAuthPassword()
+{
+    return $this->password;
+}
 }

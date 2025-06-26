@@ -16,19 +16,21 @@
 
         <header class="mb-6">
             <h1 class="text-2xl font-bold"><a href="/">My App</a></h1>
-            <nav class="mt-4">
-                @auth
-                    <a href="/" class="mr-4">Home</a>
-                    <a href="/dashboard" class="mr-4">Dashboard</a>
-                    <form action="/logout" method="POST" class="inline">
-                        @csrf
-                        <button type="submit">Logout</button>
-                    </form>
-                @else
-                    <a href="/login" class="mr-4">Login</a>
-                    <a href="/register">Register</a>
-                @endauth
-            </nav>
+           <nav class="mt-4">
+    @auth
+        <a href="/" class="mr-4">Home</a>
+        <a href="/dashboard" class="mr-4">Dashboard</a>
+        <a href="{{ route('notes.index') }}" class="mr-4">My Notes</a>
+        <form action="/logout" method="POST" class="inline">
+            @csrf
+            <button type="submit">Logout</button>
+        </form>
+    @else
+        <a href="/login" class="mr-4">Login</a>
+        <a href="/register">Register</a>
+    @endauth
+</nav>
+
         </header>
 
         <main>

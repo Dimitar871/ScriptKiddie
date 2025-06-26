@@ -18,7 +18,16 @@
             
             <div class="mb-4">
                 <label class="block mb-1">Password</label>
-                <input type="password" name="password" required class="w-full p-2 border rounded">
+                <input type="password" id="login_password" name="password" required class="w-full p-2 border rounded">
+            </div>
+
+            <!-- Show Password Checkbox -->
+            <div class="mb-4">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" onclick="toggleLoginPassword()" 
+                           class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                    <span class="ml-2">Show Password</span>
+                </label>
             </div>
             
             <div class="mb-4">
@@ -29,5 +38,20 @@
             
             <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded">Login</button>
         </form>
+
+        <div class="mt-4 text-center">
+            @if (Route::has('password.request'))
+                <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:text-blue-800">
+                    {{ __('Forgot Your Password?') }}
+                </a>
+            @endif
+        </div>
     </div>
+
+    <script>
+        function toggleLoginPassword() {
+            const input = document.getElementById('login_password');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+    </script>
 </x-layout>
