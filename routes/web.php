@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\NoteController;
 
 Route::view('/', 'home')->name('home');
@@ -25,6 +26,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () { return view('dashboard'); })->name('dashboard');
     Route::resource('notes', NoteController::class);
    
+});
+Route::get('/run-migrations', function () {
+    Artisan::call('migrate --force');
+    return '✅ Migrations executed.';
 });
 
 require __DIR__.'/auth.php';
