@@ -2,17 +2,17 @@ services:
   - type: web
     name: scriptkiddie
     env: docker
+    repo: https://github.com/Dimitar871/ScriptKiddie
+    branch: ScriptKiddie
+    rootDir: .
     plan: free
-    region: oregon
-    buildCommand: composer install
-    startCommand: php artisan serve --host 0.0.0.0 --port 10000
     envVars:
       - key: APP_ENV
         value: production
-      - key: APP_DEBUG
-        value: false
       - key: APP_KEY
         value: base64:sTlz9u0ji7uLxgs6L0jlow13CgcA/QrIgJy2DNtb+hI=
+      - key: APP_NAME
+        value: Laravel
       - key: APP_URL
         value: https://scriptkiddie.onrender.com
       - key: DB_CONNECTION
@@ -28,6 +28,4 @@ services:
       - key: DB_PASSWORD
         value: eOjyqQKtELbbOd9HTHYip2PAQXEf7g0U
       - key: SESSION_DRIVER
-        value: file
-      - key: SESSION_SECURE_COOKIE
-        value: true
+        value: database
