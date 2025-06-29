@@ -1,37 +1,48 @@
-# Use the official PHP image with Apache
-FROM php:8.2-apache
+# Set the base image
+FROM php:8.3-fpm
+
+# Set working directory
+WORKDIR /var/www
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    libpq-dev \
+    build-essential \
+    libpng-dev \
     libonig-dev \
-    libzip-dev \
+    libxml2-dev \
     zip \
-    curl
+    unzip \
+    curl \
+    libpq-dev \
+    git \
+    vim \
+    nodejs \
+    npm
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo pdo_pgsql mbstring zip
-
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+RUN docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd
 
 # Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
-WORKDIR /var/www/html
-
-# Copy everything into the container
+# Copy everything
 COPY . .
 
-# Set correct permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html
+# Install Node and build assets
+RUN npm ci && npm run build
 
-# Expose port 80
-EXPOSE 80
+# ✅ Ensure assets are built
+RUN ls -al public/build
 
-# Start Apache
-CMD ["apache2-foreground"]
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
+
+# Fix permissions
+RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www
+
+# Set user and expose port
+USER www-data
+EXPOSE 8080
+
+# Start PHP server and run migrations
+CMD ["sh", "-c", "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8080"]
